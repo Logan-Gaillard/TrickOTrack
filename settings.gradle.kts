@@ -19,6 +19,6 @@ dependencyResolutionManagement {
     }
 }
 
-rootProject.name = "Trick'oTrap"
+rootProject.name = "Trick'oTrack"
 include(":app")
  

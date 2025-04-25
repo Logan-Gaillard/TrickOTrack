@@ -1,4 +1,4 @@
-package octo.tricko.trapp
+package octo.tricko.trickotrack
 
 import org.junit.Test
 

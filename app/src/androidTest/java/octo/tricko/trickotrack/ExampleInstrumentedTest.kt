@@ -1,4 +1,4 @@
-package octo.tricko.trapp
+package octo.tricko.trickotrack
 
 import androidx.test.platform.app.InstrumentationRegistry
 import androidx.test.ext.junit.runners.AndroidJUnit4
@@ -19,6 +19,6 @@ class ExampleInstrumentedTest {
     fun useAppContext() {
         // Context of the app under test.
         val appContext = InstrumentationRegistry.getInstrumentation().targetContext
-        assertEquals("octo.tricko.trapp", appContext.packageName)
+        assertEquals("octo.tricko.trickotrack", appContext.packageName)
     }
 }
