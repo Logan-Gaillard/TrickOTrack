@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layer-list xmlns:android="http://schemas.android.com/apk/res/android">
+    <!-- Cercle blanc en dessous (bordure) -->
+    <item>
+        <shape android:shape="oval">
+            <solid android:color="#FFFFFF"/> <!-- Blanc -->
+        </shape>
+    </item>
+
+    <!-- Cercle orange au-dessus -->
+    <item android:top="30dp" android:bottom="30dp" android:left="30dp" android:right="30dp">
+        <shape android:shape="oval">
+            <solid android:color="#FF9605" /> <!-- Bleu ciel -->
+            <size android:width="100dp" android:height="100dp" />
+        </shape>
+    </item>
+</layer-list>

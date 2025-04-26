@@ -12,6 +12,9 @@ constraintlayout = "2.2.1"
 playServicesMaps = "19.2.0"
 coreSplashscreen = "1.0.1"
 material3Android = "1.3.2"
+osmdroid = "6.1.20"
+preferenceKtx = "1.2.1"
+
 
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
@@ -28,6 +31,8 @@ androidx-lifecycle-livedata-ktx = "androidx.lifecycle:lifecycle-livedata-ktx:2.8
 androidx-lifecycle-runtime-ktx = "androidx.lifecycle:lifecycle-runtime-ktx:2.8.7"
 androidx-core-splashscreen = { group = "androidx.core", name = "core-splashscreen", version.ref = "coreSplashscreen" }
 androidx-material3-android = { group = "androidx.compose.material3", name = "material3-android", version.ref = "material3Android" }
+androidx-preference-ktx = { group = "androidx.preference", name = "preference-ktx", version.ref = "preferenceKtx" }
+osmdroid = { module = "org.osmdroid:osmdroid-android", version.ref = "osmdroid" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }

@@ -53,6 +53,8 @@ dependencies {
     implementation(libs.androidx.lifecycle.runtime.ktx)
     implementation(libs.androidx.core.splashscreen)
     implementation(libs.androidx.material3.android)
+    implementation(libs.osmdroid)
+    implementation(libs.androidx.preference.ktx)
 
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
