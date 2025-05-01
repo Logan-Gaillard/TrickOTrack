@@ -52,6 +52,5 @@
         <!-- Content inside bar in black -->
         <item name="android:windowLightStatusBar">true</item>
         <item name="android:windowLightNavigationBar">true</item>
-
     </style>
 </resources>

@@ -18,6 +18,7 @@ class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState) //Initialisation de l'activité
         setContentView(R.layout.activity_main) // Définition du layout de l'activité (activity_main.xml)
+
         supportFragmentManager.beginTransaction() // Afficher par défaut le fragment AccueilFragment
             .replace(R.id.fragment_container, AccueilFragment())
             .commit()
