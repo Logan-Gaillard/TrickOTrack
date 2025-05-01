@@ -42,6 +42,8 @@ android {
 
 dependencies {
 
+    val activity_version = "1.7.2"
+
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.appcompat)
     implementation(libs.material)
@@ -55,6 +57,8 @@ dependencies {
     implementation(libs.androidx.material3.android)
     implementation(libs.osmdroid)
     implementation(libs.androidx.preference.ktx)
+    implementation(libs.androidx.activity.v172)
+    implementation(libs.androidx.activity.ktx)
 
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)

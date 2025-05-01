@@ -1,5 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name">Trick\'oTrack</string>
     <string name="alreadyHaveAccount">Se connecter</string>
     <string name="createAccountBtn">Créer mon compte</string>
     <string name="passwordConfirm">Confirmez mot de passe</string>
