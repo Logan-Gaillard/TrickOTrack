@@ -8,8 +8,13 @@ import android.widget.Button
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.view.GravityCompat
 import androidx.drawerlayout.widget.DrawerLayout
+import androidx.lifecycle.lifecycleScope
 import com.google.android.material.navigation.NavigationView
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.plus
 import octo.tricko.trickotrack.R
+import octo.tricko.trickotrack.data.TokenManager
+import octo.tricko.trickotrack.data.TokenState
 import octo.tricko.trickotrack.utils.ViewUtils
 
 import octo.tricko.trickotrack.viewmodel.MainViewModel
@@ -17,15 +22,15 @@ import octo.tricko.trickotrack.viewmodel.MainViewModel
 class MainActivity : AppCompatActivity() {
 
     private val viewModel = MainViewModel()
-    private val viewUtils = ViewUtils()
+    private val viewUtils = ViewUtils
+    private val tokenManager = TokenManager // Instanciation de la classe TokenManager
 
     private lateinit var drawerLayout: DrawerLayout //Déclaration de la variable drawerLayout (= la barre de navigation)
     private lateinit var navView: NavigationView //Déclaration de la variable navView (= la vue de navigation)
     private lateinit var navHeader: View //Déclaration de la variable navHeader (= l'en-tête de la vue de navigation)
-    private lateinit var navFooter: View //Déclaration de la variable navFooter (= le pied de page de la vue de navigation)
+    //private lateinit var navFooter: View //Déclaration de la variable navFooter (= le pied de page de la vue de navigation)
 
     override fun onCreate(savedInstanceState: Bundle?) {
-
         super.onCreate(savedInstanceState) //Initialisation de l'activité
         setContentView(R.layout.activity_main) // Définition du layout de l'activité (activity_main.xml)
 

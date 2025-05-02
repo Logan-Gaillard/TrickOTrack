@@ -1,5 +1,8 @@
 package octo.tricko.trickotrack.utils
 
+import android.app.Activity
+import android.content.Context
+import android.content.Intent
 import android.view.View
 import android.view.Window
 import androidx.core.view.ViewCompat
@@ -7,7 +10,7 @@ import androidx.core.view.WindowCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.updatePadding
 
-class ViewUtils {
+object ViewUtils {
     fun adapterView(window: Window, view: View){
         WindowCompat.setDecorFitsSystemWindows(window, false)// permet d'afficher les element sous la barre de status
         ViewCompat.setOnApplyWindowInsetsListener(view){ v, insets ->
@@ -17,4 +20,16 @@ class ViewUtils {
             insets
         }
     }
+
+    fun openActivity(context: Context, activity: Class<*>){
+        val intent = Intent(context, activity)
+        context.startActivity(intent)
+    }
+
+    fun replaceActivity(context: Activity, activity: Class<*>){
+        val intent = Intent(context, activity)
+        context.startActivity(intent)
+        context.finish() // Termine l'activité actuelle
+    }
+
 }

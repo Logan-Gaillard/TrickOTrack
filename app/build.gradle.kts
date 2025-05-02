@@ -59,6 +59,7 @@ dependencies {
     implementation(libs.androidx.preference.ktx)
     implementation(libs.androidx.activity.v172)
     implementation(libs.androidx.activity.ktx)
+    implementation(libs.datastore.preferences)
 
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)

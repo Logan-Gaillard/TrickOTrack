@@ -2,7 +2,10 @@
     <string name="app_name">Trick\'oTrack</string>
     <string name="alreadyHaveAccount">Se connecter</string>
     <string name="createAccountBtn">Créer mon compte</string>
-    <string name="passwordConfirm">Confirmez mot de passe</string>
-    <string name="password">Mot de passe</string>
-    <string name="courriel">Courriel</string>
+    <string name="passwordConfirm">Confirmez mot de passe*</string>
+    <string name="password">Mot de passe*</string>
+    <string name="courriel">Courriel*</string>
+    <string name="lastName">Nom</string>
+    <string name="firstName">Prénom</string>
+    <string name="nickname">Pseudo*</string>
 </resources>
