@@ -25,6 +25,7 @@
             android:exported="true">
         </activity>
         <activity android:name=".ui.RegisterActivity" />
+        <activity android:name=".ui.LoginActivity" />
         <activity android:name=".ui.Launcher"
             android:exported="true">
             <intent-filter>

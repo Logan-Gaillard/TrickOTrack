@@ -26,6 +26,8 @@ class RegisterActivity : AppCompatActivity() {
     private lateinit var passwordRegInput : EditText; //Le champ de texte pour le mot de passe
     private lateinit var passwordConfirmRegInput : EditText; //Le champ de texte pour la confirmation du mot de passe
 
+    private lateinit var loginRegBtn : Button; //Le bouton 'se connecter'
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_register) // Définition du layout de l'activité (activity_register.xml)
@@ -39,6 +41,7 @@ class RegisterActivity : AppCompatActivity() {
         courrielRegInput = findViewById<TextInputLayout>(R.id.emailRegInput).editText!! // Récupération de la référence au champ de texte pour le nom
         passwordRegInput = findViewById<TextInputLayout>(R.id.passwordRegInput).editText!! // Récupération de la référence au champ de texte pour le mot de passe
         passwordConfirmRegInput = findViewById<TextInputLayout>(R.id.passwordConfirmRegInput).editText!! // Récupération de la référence au champ de texte pour la confirmation du mot de passe
+        loginRegBtn = findViewById(R.id.loginActivity_button) // Récupération de la référence au bouton de connexion
 
         registerBtn = findViewById(R.id.register_button) // Récupération de la référence au bouton d'enregistrement
 
@@ -53,6 +56,13 @@ class RegisterActivity : AppCompatActivity() {
                 repository.registerUser(nom, prenom, pseudo, email, passwordRegInput.text.toString(), passwordRegInput.text.toString(), errString, this@RegisterActivity) // Appel de la méthode registerUser de la classe RegisterRepository
             }
         }
+
+        loginRegBtn.setOnClickListener {
+            viewUtils.replaceActivity(this, LoginActivity::class.java) // Remplace l'activité RegisterActivity par LoginActivity
+            finish() // Termine l'activité RegisterActivity
+        }
+
+
 
         //Lorsque le pseudo est modifié, on vérifie si le pseudo est valide
         nicknameRegInput.doOnTextChanged { text,_,_,_ ->
