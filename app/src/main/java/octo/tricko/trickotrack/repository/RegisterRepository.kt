@@ -5,6 +5,7 @@ import android.view.View
 import android.view.Window
 import android.widget.Button
 import android.widget.TextView
+import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.core.app.ActivityCompat.finishAffinity
 import octo.tricko.trickotrack.data.TokenManager
@@ -65,6 +66,8 @@ class RegisterRepository {
                 }
                 return true
             }
+        }else if(response["status"] == "error" && response["type"] == "ConnectException"){
+            Toast.makeText(context, "Une erreur de communication est survenue", Toast.LENGTH_SHORT).show()
         }
         return false
     }

@@ -8,6 +8,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import org.json.JSONObject
 import java.io.FileNotFoundException
+import java.net.ConnectException
 
 object RequestAPI {
 
@@ -38,7 +39,9 @@ object RequestAPI {
                 }
             }
         } catch (e: FileNotFoundException) {
-            return@withContext mapOf("status" to "error", "message" to "Erreur 404 : ${e.message}")
+            return@withContext mapOf("status" to "error", "message" to "Erreur 404 : ${e.message}", "type" to "FileNotFoundException")
+        } catch (e : ConnectException){
+            return@withContext mapOf("status" to "error", "message" to "Erreur 404 : ${e.message}", "type" to "ConnectException")
         }
     }
 
