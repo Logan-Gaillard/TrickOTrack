@@ -11,7 +11,7 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import octo.tricko.trickotrack.repository.MainRepository
 import octo.tricko.trickotrack.R
-import octo.tricko.trickotrack.ui.AccueilFragment
+import octo.tricko.trickotrack.ui.MapFragment
 import octo.tricko.trickotrack.ui.SettingsFragment
 
 class MainViewModel : ViewModel() {
@@ -39,7 +39,7 @@ class MainViewModel : ViewModel() {
         when (menuItem.itemId) {
             R.id.accueil -> { // AccueilFragment
                 supportFragmentManager.beginTransaction() // Remplace le fragment actuel par AccueilFragment
-                    .replace(R.id.fragment_container, AccueilFragment())
+                    .replace(R.id.fragment_container, MapFragment())
                     .commit()
             }
             R.id.settings -> { // SettingsFragment

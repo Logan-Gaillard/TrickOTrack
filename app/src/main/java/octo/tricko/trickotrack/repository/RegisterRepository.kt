@@ -1,14 +1,11 @@
 package octo.tricko.trickotrack.repository
 
-import android.app.Activity
-import android.view.View
 import android.view.Window
 import android.widget.Button
 import android.widget.TextView
 import androidx.appcompat.app.AlertDialog
 import androidx.core.app.ActivityCompat.finishAffinity
 import octo.tricko.trickotrack.data.TokenManager
-import octo.tricko.trickotrack.ui.AccueilFragment
 import octo.tricko.trickotrack.ui.MainActivity
 import octo.tricko.trickotrack.ui.RegisterActivity
 import octo.tricko.trickotrack.utils.RequestAPI

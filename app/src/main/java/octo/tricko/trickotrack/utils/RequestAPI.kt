@@ -11,7 +11,7 @@ import java.io.FileNotFoundException
 
 object RequestAPI {
 
-    private var urlAPI : String = "http://192.168.1.136:8000/"
+    private var urlAPI : String = "http://192.168.101.242:8000/"
 
     suspend fun requestPOST(urlRequest: String, jsonInputBodyData: JSONObject, token: String? = null): Map<String, Any> = withContext(Dispatchers.IO) {
         try{
