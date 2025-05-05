@@ -8,13 +8,9 @@ import android.widget.Button
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.view.GravityCompat
 import androidx.drawerlayout.widget.DrawerLayout
-import androidx.lifecycle.lifecycleScope
 import com.google.android.material.navigation.NavigationView
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.plus
 import octo.tricko.trickotrack.R
 import octo.tricko.trickotrack.data.TokenManager
-import octo.tricko.trickotrack.data.TokenState
 import octo.tricko.trickotrack.utils.ViewUtils
 
 import octo.tricko.trickotrack.viewmodel.MainViewModel
@@ -41,7 +37,7 @@ class MainActivity : AppCompatActivity() {
         }
 
         supportFragmentManager.beginTransaction() // Afficher par défaut le fragment AccueilFragment
-            .replace(R.id.fragment_container, AccueilFragment())
+            .replace(R.id.fragment_container, MapFragment())
             .commit()
 
         drawerLayout = findViewById(R.id.drawer_layout) // Récupération de la référence à la barre de navigation
