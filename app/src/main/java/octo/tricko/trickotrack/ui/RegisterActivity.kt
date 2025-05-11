@@ -36,7 +36,7 @@ class RegisterActivity : AppCompatActivity() {
         val appName = getString(R.string.app_name) // Récupère le texte défini dans strings.xml
         welcomeText.text = "Bienvenue sur $appName" // Concaténation du texte
 
-        viewUtils.adapterView(window, findViewById(R.id.constraint_layout)) // Appel de la méthode adapterView pour adapter la vue à la barre de statut
+        viewUtils.adapterView(window, findViewById(R.id.constraint_layout_register)) // Appel de la méthode adapterView pour adapter la vue à la barre de statut
         nicknameRegInput = findViewById<TextInputLayout>(R.id.nicknameRegInput).editText!! // Récupération de la référence au champ de texte pour le pseudo
         courrielRegInput = findViewById<TextInputLayout>(R.id.emailRegInput).editText!! // Récupération de la référence au champ de texte pour le nom
         passwordRegInput = findViewById<TextInputLayout>(R.id.passwordRegInput).editText!! // Récupération de la référence au champ de texte pour le mot de passe

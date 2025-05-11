@@ -28,7 +28,7 @@ class LoginActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         val view = setContentView(R.layout.activity_login) // Définition du layout de l'activité (activity_login.xml)
 
-        viewUtils.adapterView(window, findViewById(R.id.constraint_layout)) // Appel de la méthode adapterView pour adapter la vue à la barre de statut
+        viewUtils.adapterView(window, findViewById(R.id.constraint_layout_login)) // Appel de la méthode adapterView pour adapter la vue à la barre de statut
 
         emailInput = findViewById<TextInputLayout>(R.id.emailLogInput).editText!! // Récupération de la référence au champ de texte pour le nom
         passwordInput = findViewById<TextInputLayout>(R.id.passwordLogInput).editText!! // Récupération de la référence au champ de texte pour le mot de passe

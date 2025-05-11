@@ -21,13 +21,35 @@ object ViewUtils {
         }
     }
 
-    fun openActivity(context: Context, activity: Class<*>){
+    fun openActivity(context: Context, activity: Class<*>, extras: Map<String, Any>? = null){
         val intent = Intent(context, activity)
+        extras?.forEach { (key, value) ->
+            when (value) {
+                is String -> intent.putExtra(key, value)
+                is Int -> intent.putExtra(key, value)
+                is Boolean -> intent.putExtra(key, value)
+                is Double -> intent.putExtra(key, value)
+                is Float -> intent.putExtra(key, value)
+                is Long -> intent.putExtra(key, value)
+                // Ajoutez d'autres types si nécessaire
+            }
+        }
         context.startActivity(intent)
     }
 
-    fun replaceActivity(context: Activity, activity: Class<*>){
+    fun replaceActivity(context: Activity, activity: Class<*>, extras: Map<String, Any>? = null) {
         val intent = Intent(context, activity)
+        extras?.forEach { (key, value) ->
+            when (value) {
+                is String -> intent.putExtra(key, value)
+                is Int -> intent.putExtra(key, value)
+                is Boolean -> intent.putExtra(key, value)
+                is Double -> intent.putExtra(key, value)
+                is Float -> intent.putExtra(key, value)
+                is Long -> intent.putExtra(key, value)
+                // Ajoutez d'autres types si nécessaire
+            }
+        }
         context.startActivity(intent)
         context.finish() // Termine l'activité actuelle
     }
