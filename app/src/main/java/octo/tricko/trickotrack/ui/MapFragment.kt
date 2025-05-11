@@ -21,7 +21,7 @@ class MapFragment : Fragment() {
     lateinit var mRotationGestureOverlay: RotationGestureOverlay // Déclaration de la variable mRotationGestureOverlay (= la rotation de la carte)
 
     lateinit var markAskBottomFragment: MarkAskBottomFragment
-    private var mapRepository: MapRepository = MapRepository() // Instanciation de la classe MapRepository
+    private var mapRepository: MapRepository = MapRepository(this) // Instanciation de la classe MapRepository
 
     lateinit var centreBtn: FloatingActionButton // Déclaration de la variable centreBtn (= le bouton de centrage de la carte)
     lateinit var alertBtn: FloatingActionButton

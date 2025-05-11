@@ -1,5 +1,7 @@
 package octo.tricko.trickotrack.repository
 
+import android.os.Bundle
+import android.util.Log
 import android.view.View
 import android.widget.CheckBox
 import android.widget.Toast
@@ -59,24 +61,23 @@ class MaskAskBottomRepository(markAskBottomFragment : MarkAskBottomFragment) {
                 .put("is_celebrated", isCelebrated)
                 .put("is_decorated", isDecorated)
 
-            var textToast = ""
             fragment.lifecycleScope.launch { // Launched as a coroutine
                 val token = tokenManager.getToken(fragment.requireContext()).first() // Get token in a suspending way
-
                 val response = requestAPI.requestPOST("alert/createHouse", jsonInputBodyData, token.toString()) // Make API call in a suspending way
-                if (response["status"] == "success") {
-                    // Traitement de la réponse
-                    println("Réponse de l'API : ${response["reponse"]}")
-                    textToast = "Votre marquage pris en compte, merci !"
-                } else {
-                    // Gestion des erreurs
-                    println("Erreur : ${response["response"]}")
-                    if(response["code"] == 422) textToast = "Champs entrées invalides"
-                    if(response["code"] == 401) textToast = "Non autorisé"
-                    if(response["code"] == 409) textToast = "Habitation déjà signalée"
+
+                val textToast = when (response["code"]) {
+                    422 -> "Champs entrées invalides"
+                    401 -> "Non autorisé"
+                    409 -> "Habitation déjà signalée"
+                    else -> "Votre marquage pris en compte, merci !"
                 }
 
                 Toast.makeText(fragment.requireContext(), textToast, Toast.LENGTH_SHORT).show() // Show toast with the relevant message
+
+                val result = Bundle().apply {
+                    putBoolean("is_close", true)
+                }
+                fragment.parentFragmentManager.setFragmentResult("MaskAskBottom", result)
                 fragment.dismiss() // Dismiss the fragment after showing the toast
             }
         }
@@ -93,25 +94,28 @@ class MaskAskBottomRepository(markAskBottomFragment : MarkAskBottomFragment) {
                 .put("longitude", fragment.arguments?.getDouble("longitude"))
                 .put("adresse", fragment.houseAdresseText.text.toString())
 
-            var textToast = ""
-            fragment.lifecycleScope.launch { // Launched as a coroutine
-                val token = tokenManager.getToken(fragment.requireContext()).first() // Get token in a suspending way
+            fragment.lifecycleScope.launch {
+                try {
+                    val token = tokenManager.getToken(fragment.requireContext()).first()
+                    val response = requestAPI.requestPOST("alert/createEvent", jsonInputBodyData, token.toString())
 
-                val response = requestAPI.requestPOST("alert/createEvent", jsonInputBodyData, token.toString()) // Make API call in a suspending way
-                if (response["status"] == "success") {
-                    // Traitement de la réponse
-                    println("Réponse de l'API : ${response["reponse"]}")
-                    textToast = "Votre marquage pris en compte, merci !"
-                } else {
-                    // Gestion des erreurs
-                    println("Erreur : ${response["response"]}")
-                    if(response["code"] == 422) textToast = "Champs entrées invalides"
-                    if(response["code"] == 401) textToast = "Non autorisé"
-                    if(response["code"] == 409) textToast = "Habitation déjà signalée"
+                    val textToast = when (response["code"]) {
+                        422 -> "Champs entrées invalides"
+                        401 -> "Non autorisé"
+                        409 -> "Habitation déjà signalée"
+                        else -> "Votre marquage pris en compte, merci !"
+                    }
+
+                    Toast.makeText(fragment.requireContext(), textToast, Toast.LENGTH_SHORT).show()
+
+                    val result = Bundle().apply {
+                        putBoolean("is_close", true)
+                    }
+                    fragment.parentFragmentManager.setFragmentResult("MaskAskBottom", result)
+                    fragment.dismiss()
+                } catch (e: Exception) {
+                    Log.e("CoroutineError", "Erreur : ${e.message}", e)
                 }
-
-                Toast.makeText(fragment.requireContext(), textToast, Toast.LENGTH_SHORT).show() // Show toast with the relevant message
-                fragment.dismiss() // Dismiss the fragment after showing the toast
             }
         }
     }

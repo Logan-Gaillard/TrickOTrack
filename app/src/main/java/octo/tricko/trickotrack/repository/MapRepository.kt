@@ -28,11 +28,13 @@ import org.osmdroid.views.overlay.mylocation.GpsMyLocationProvider
 import org.osmdroid.views.overlay.mylocation.MyLocationNewOverlay
 import java.util.Random
 
-class MapRepository {
+class MapRepository(mapFragment: MapFragment) {
 
     private val markers: MutableList<Marker> = mutableListOf() // Liste des marqueurs sur la carte
     private var actualMarker: Marker? = null; // Marqueur temporaire
     private lateinit var mapViewFragment: MapView // Déclaration de la variable mapView (= la carte)
+
+    private val fragment: MapFragment = mapFragment // Récupération de la référence au fragment
 
     fun initMap(view: View, activity: MapFragment) {
         // Initialisation de la MapView
@@ -129,6 +131,19 @@ class MapRepository {
         initOnTouchEvent(mapViewFragment, activity.centreBtn, activity.mLocationOverlay)
         initOnClickAlertBtn(activity, activity.alertBtn) // Initialisation du bouton d'alerte
         initOnClickCentreBtn(activity, activity.centreBtn) // Initialisation du bouton de centrage
+
+        fragment.parentFragmentManager.setFragmentResultListener("MaskAskBottom", fragment.viewLifecycleOwner) { _, bundle ->
+            val isClose : Boolean = bundle.getBoolean("is_close")
+            if (isClose){
+                // Supprimer le pin
+                if (actualMarker != null){
+                    actualMarker!!.closeInfoWindow()
+                    mapViewFragment.overlays.remove(actualMarker)
+                    markers.remove(actualMarker)
+                    actualMarker = null
+                }
+            }
+        }
     }
 
     @SuppressLint("ClickableViewAccessibility")
