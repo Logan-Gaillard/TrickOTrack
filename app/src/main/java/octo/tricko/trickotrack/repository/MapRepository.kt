@@ -1,28 +1,23 @@
 package octo.tricko.trickotrack.repository
 
 import android.annotation.SuppressLint
-import android.app.Activity
 import android.content.Context
-import android.content.SharedPreferences
 import android.graphics.Bitmap
 import android.location.Location
 import android.location.LocationManager
 import android.util.Log
 import android.view.MotionEvent
 import android.view.View
-import androidx.compose.foundation.text.input.TextFieldState.Saver.save
 import androidx.core.content.PermissionChecker
 import androidx.core.content.res.ResourcesCompat
 import androidx.core.graphics.drawable.toBitmap
 import androidx.core.graphics.scale
-import androidx.fragment.app.FragmentActivity
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import octo.tricko.trickotrack.R
-import octo.tricko.trickotrack.ui.AlertBottomFragment
+import octo.tricko.trickotrack.ui.MarkAskBottomFragment
 import octo.tricko.trickotrack.ui.MapFragment
 import octo.tricko.trickotrack.ui.components.CustomInfoWindow
 import org.osmdroid.api.IGeoPoint
-import org.osmdroid.config.Configuration
 import org.osmdroid.events.MapEventsReceiver
 import org.osmdroid.util.GeoPoint
 import org.osmdroid.views.MapView
@@ -32,7 +27,6 @@ import org.osmdroid.views.overlay.gestures.RotationGestureOverlay
 import org.osmdroid.views.overlay.mylocation.GpsMyLocationProvider
 import org.osmdroid.views.overlay.mylocation.MyLocationNewOverlay
 import java.util.Random
-import kotlin.math.absoluteValue
 
 class MapRepository {
 
@@ -189,8 +183,8 @@ class MapRepository {
     // Lorsqu'un click sur le bouton d'alerte est détecté
     private fun initOnClickAlertBtn(activity: MapFragment, alertBtn: FloatingActionButton){
         alertBtn.setOnClickListener {
-            activity.alertBottomFragment = AlertBottomFragment()
-            activity.alertBottomFragment.show(activity.requireActivity().supportFragmentManager, "AlertBottomFragment")
+            activity.markAskBottomFragment = MarkAskBottomFragment()
+            activity.markAskBottomFragment.show(activity.requireActivity().supportFragmentManager, "AlertBottomFragment")
         }
     }
 

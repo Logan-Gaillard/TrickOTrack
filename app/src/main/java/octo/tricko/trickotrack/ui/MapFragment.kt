@@ -1,37 +1,18 @@
 package octo.tricko.trickotrack.ui
 
-import android.annotation.SuppressLint
-import android.content.Context
 import android.content.SharedPreferences
-import android.graphics.Bitmap
-import android.graphics.drawable.Drawable
-import android.location.Location
-import android.location.LocationManager
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
-import android.view.MotionEvent
 import android.view.View
 import android.view.ViewGroup
-import androidx.core.content.PermissionChecker
 import androidx.fragment.app.Fragment
-import androidx.core.content.res.ResourcesCompat
-import androidx.core.graphics.drawable.toBitmap
 import octo.tricko.trickotrack.R
 import org.osmdroid.config.Configuration
 import org.osmdroid.views.MapView
 import org.osmdroid.views.overlay.gestures.RotationGestureOverlay
-import org.osmdroid.views.overlay.mylocation.GpsMyLocationProvider
 import org.osmdroid.views.overlay.mylocation.MyLocationNewOverlay
-import androidx.core.graphics.scale
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import octo.tricko.trickotrack.repository.MapRepository
-import octo.tricko.trickotrack.ui.components.CustomInfoWindow
-import org.osmdroid.api.IGeoPoint
-import org.osmdroid.events.MapEventsReceiver
-import org.osmdroid.util.GeoPoint
-import org.osmdroid.views.overlay.MapEventsOverlay
-import org.osmdroid.views.overlay.Marker
 
 class MapFragment : Fragment() {
 
@@ -39,7 +20,7 @@ class MapFragment : Fragment() {
     lateinit var mLocationOverlay: MyLocationNewOverlay // Déclaration de la variable mLocatationOverlay (= la localisation de l'utilisateur)
     lateinit var mRotationGestureOverlay: RotationGestureOverlay // Déclaration de la variable mRotationGestureOverlay (= la rotation de la carte)
 
-    lateinit var alertBottomFragment: AlertBottomFragment
+    lateinit var markAskBottomFragment: MarkAskBottomFragment
     private var mapRepository: MapRepository = MapRepository() // Instanciation de la classe MapRepository
 
     lateinit var centreBtn: FloatingActionButton // Déclaration de la variable centreBtn (= le bouton de centrage de la carte)
