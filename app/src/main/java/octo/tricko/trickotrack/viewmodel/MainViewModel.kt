@@ -9,14 +9,12 @@ import androidx.fragment.app.FragmentManager
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import octo.tricko.trickotrack.repository.MainRepository
 import octo.tricko.trickotrack.R
 import octo.tricko.trickotrack.ui.MapFragment
 import octo.tricko.trickotrack.ui.SettingsFragment
 
 class MainViewModel : ViewModel() {
 
-    private val repository = MainRepository()
 
     private val _message = MutableLiveData<String>()
     val message: LiveData<String> = _message
