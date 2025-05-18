@@ -10,18 +10,26 @@ import kotlinx.coroutines.withContext
 import org.json.JSONObject
 import java.io.FileNotFoundException
 import java.net.ConnectException
+import java.net.SocketTimeoutException
 
 object RequestAPI {
 
-    private var urlAPI : String = "http://192.168.1.136:8000/"
+    private var urlAPI : String = "https://trickotrapi.logangaillard.fr/"
+    //private var urlAPI : String = "http://192.168.1.136:8000/"
+    private var doingRequest = false
 
     suspend fun requestPOST(urlRequest: String, jsonInputBodyData: JSONObject, token: String? = null): Map<String, Any> = withContext(Dispatchers.IO) {
         try{
+            if(doingRequest) return@withContext mapOf("status" to "error", "message" to "Une requête est déjà en cours")
+            doingRequest = true
+
             if (urlRequest.isEmpty()) throw Exception("URL vide") // Vérification de l'URL
             val url = URL("${urlAPI}${urlRequest}") // Création de l'URL à partir de la chaîne de caractères
 
             with(url.openConnection() as HttpURLConnection){ // Ouverture de la connexion
                 requestMethod = "POST"
+                connectTimeout = 10000 // Délai d'attente de connexion
+                readTimeout = 10000 // Délai d'attente de lecture
                 setRequestProperty("Content-Type", "application/json") // Type de donnée
                 setRequestProperty("Accept", "application/json") // Type de réponse attendue
                 if(token != null) { setRequestProperty("Authorization", "Bearer $token") }
@@ -40,15 +48,23 @@ object RequestAPI {
 
                 stream.bufferedReader().use {
                     val response = it.readText()
+                    Log.d("RequestAPI", "Réponse avec le code : $responseCode : $response")
+                    doingRequest = false
                     return@withContext mapOf("status" to if (responseCode in 200..299) "success" else "error","reponse" to response,"code" to responseCode)
                 }
             }
         } catch (e: FileNotFoundException) {
             Log.e("RequestAPI", "FileNotFoundException : ${e}") // Affichage de l'erreur dans les logs
+            doingRequest = false
             return@withContext mapOf("status" to "error", "message" to "FileNotFoundException : ${e.message}", "type" to "FileNotFoundException")
         } catch (e : ConnectException){
+            doingRequest = false
             return@withContext mapOf("status" to "error", "message" to "ConnectException : ${e.message}", "type" to "ConnectException")
+        } catch (e: SocketTimeoutException){
+            doingRequest = false
+            return@withContext mapOf("status" to "error", "message" to "SocketTimeoutException : ${e.message}", "type" to "SocketTimeoutException")
         } catch (e: Exception) {
+            doingRequest = false
             return@withContext mapOf("status" to "error", "message" to "Exception : ${e.message}", "type" to "Exception")
         }
     }

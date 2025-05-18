@@ -63,7 +63,7 @@ class MaskAskBottomRepository(markAskBottomFragment : MarkAskBottomFragment) {
 
             fragment.lifecycleScope.launch { // Launched as a coroutine
                 val token = tokenManager.getToken(fragment.requireContext()).first() // Get token in a suspending way
-                val response = requestAPI.requestPOST("alert/createHouse", jsonInputBodyData, token.toString()) // Make API call in a suspending way
+                val response = requestAPI.requestPOST("mark/createHouse", jsonInputBodyData, token.toString()) // Make API call in a suspending way
 
                 val textToast = when (response["code"]) {
                     422 -> "Champs entrées invalides"
@@ -97,7 +97,7 @@ class MaskAskBottomRepository(markAskBottomFragment : MarkAskBottomFragment) {
             fragment.lifecycleScope.launch {
                 try {
                     val token = tokenManager.getToken(fragment.requireContext()).first()
-                    val response = requestAPI.requestPOST("alert/createEvent", jsonInputBodyData, token.toString())
+                    val response = requestAPI.requestPOST("mark/createEvent", jsonInputBodyData, token.toString())
 
                     val textToast = when (response["code"]) {
                         422 -> "Champs entrées invalides"

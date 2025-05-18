@@ -12,6 +12,7 @@ import org.osmdroid.views.MapView
 import org.osmdroid.views.overlay.gestures.RotationGestureOverlay
 import org.osmdroid.views.overlay.mylocation.MyLocationNewOverlay
 import com.google.android.material.floatingactionbutton.FloatingActionButton
+import octo.tricko.trickotrack.model.PlaceModel
 import octo.tricko.trickotrack.repository.MapRepository
 
 class MapFragment : Fragment() {
@@ -20,11 +21,12 @@ class MapFragment : Fragment() {
     lateinit var mLocationOverlay: MyLocationNewOverlay // Déclaration de la variable mLocatationOverlay (= la localisation de l'utilisateur)
     lateinit var mRotationGestureOverlay: RotationGestureOverlay // Déclaration de la variable mRotationGestureOverlay (= la rotation de la carte)
 
-    lateinit var markAskBottomFragment: MarkAskBottomFragment
     private var mapRepository: MapRepository = MapRepository(this) // Instanciation de la classe MapRepository
 
     lateinit var centreBtn: FloatingActionButton // Déclaration de la variable centreBtn (= le bouton de centrage de la carte)
     lateinit var alertBtn: FloatingActionButton
+
+    var placeModel: PlaceModel = PlaceModel(this)
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         super.onCreateView(inflater, container, savedInstanceState)
@@ -35,7 +37,7 @@ class MapFragment : Fragment() {
         Configuration.getInstance().load(context, sharedPreferences) // Chargement de la configuration de la carte
         Configuration.getInstance().userAgentValue = requireContext().packageName // Définition de l'agent utilisateur pour la carte
 
-        mapRepository.initMap(view, this@MapFragment) // Initialisation de la carte
+        mapRepository.initMap(view) // Initialisation de la carte
 
         return view
     }

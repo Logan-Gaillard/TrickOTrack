@@ -21,8 +21,11 @@ class CustomInfoWindow(mapView: MapView, activityFragment: FragmentActivity) : I
         val locationTextView = mView.findViewById<TextView>(R.id.ciw_localisation_value)
         locationTextView.text = position
 
+        val signalementBtn: MaterialButton = mView.findViewById(R.id.ciw_report_btn)
+
         val adresseTextView = mView.findViewById<TextView>(R.id.ciw_adresse_value)
         adresseTextView.text = "Chargement de l'adresse..."
+
         // Récupération de l'adresse à partir des coordonnées
         Thread {
             try {
@@ -35,6 +38,7 @@ class CustomInfoWindow(mapView: MapView, activityFragment: FragmentActivity) : I
                     val adresse = "${if (num != null) "$num. " else ""}${if (rue != null) "$rue, " else ""}${ville ?: "Ville inconnue"}"
 
                     activity?.runOnUiThread {
+                        signalementBtn.isEnabled = true
                         adresseTextView.text = adresse
                     }
                 }
@@ -43,7 +47,6 @@ class CustomInfoWindow(mapView: MapView, activityFragment: FragmentActivity) : I
             }
         }.start()
 
-        val signalementBtn: MaterialButton = mView.findViewById(R.id.ciw_report_btn)
         signalementBtn.setOnClickListener {
             val markAskBottomFragment = MarkAskBottomFragment()
             markAskBottomFragment.arguments = Bundle().apply {
