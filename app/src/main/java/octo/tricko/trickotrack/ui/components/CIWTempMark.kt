@@ -12,7 +12,7 @@ import org.osmdroid.views.MapView
 import org.osmdroid.views.overlay.infowindow.InfoWindow
 import java.util.Locale
 
-class CustomInfoWindow(mapView: MapView, activityFragment: FragmentActivity) : InfoWindow(R.layout.custom_info_window, mapView) {
+class CIWTempMark(mapView: MapView, activityFragment: FragmentActivity) : InfoWindow(R.layout.ciw_temp_mark, mapView) {
     private val activity = activityFragment;
     override fun onOpen(item: Any?) {
         val marker = item as Marker

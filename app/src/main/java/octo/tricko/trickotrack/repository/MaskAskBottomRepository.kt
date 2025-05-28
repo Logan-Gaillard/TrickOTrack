@@ -35,13 +35,13 @@ class MaskAskBottomRepository(markAskBottomFragment : MarkAskBottomFragment) {
             override fun onTabReselected(tab: TabLayout.Tab?) {}
         })
         fragment.houseAdresseText.doOnTextChanged { _, _, _, _ ->
-            fragment.houseFormSubmitBtn.isEnabled = !fragment.houseAdresseText.text.isNullOrEmpty() && fragment.houseAdresseText.text.length >= 5 && fragment.houseAdresseText.text.length <= 40
+            fragment.houseFormSubmitBtn.isEnabled = !fragment.houseAdresseText.text.isNullOrEmpty() && fragment.houseAdresseText.text.length >= 10 && fragment.houseAdresseText.text.length <= 100
         }
         fragment.eventAdresseText.doOnTextChanged { _, _, _, _ ->
-            fragment.eventFormSubmitBtn.isEnabled = (!fragment.eventAdresseText.text.isNullOrEmpty() && fragment.eventAdresseText.text.length >= 5 && fragment.eventAdresseText.text.length <= 40) && (!fragment.titleEvent.text.isNullOrEmpty() && fragment.titleEvent.text.length >= 5 && fragment.titleEvent.text.length <= 40)
+            fragment.eventFormSubmitBtn.isEnabled = (!fragment.eventAdresseText.text.isNullOrEmpty() && fragment.eventAdresseText.text.length >= 10 && fragment.eventAdresseText.text.length <= 100) && (!fragment.titleEvent.text.isNullOrEmpty() && fragment.titleEvent.text.length >= 5 && fragment.titleEvent.text.length <= 40)
         }
         fragment.titleEvent.doOnTextChanged { _, _, _, _ ->
-            fragment.eventFormSubmitBtn.isEnabled = (!fragment.eventAdresseText.text.isNullOrEmpty() && fragment.eventAdresseText.text.length >= 5 && fragment.eventAdresseText.text.length <= 40) && (!fragment.titleEvent.text.isNullOrEmpty() && fragment.titleEvent.text.length >= 5 && fragment.titleEvent.text.length <= 40)
+            fragment.eventFormSubmitBtn.isEnabled = (!fragment.eventAdresseText.text.isNullOrEmpty() && fragment.eventAdresseText.text.length >= 5 && fragment.eventAdresseText.text.length <= 100) && (!fragment.titleEvent.text.isNullOrEmpty() && fragment.titleEvent.text.length >= 5 && fragment.titleEvent.text.length <= 40)
         }
 
         fragment.houseFormSubmitBtn.setOnClickListener {
@@ -88,7 +88,7 @@ class MaskAskBottomRepository(markAskBottomFragment : MarkAskBottomFragment) {
             val message = view.findViewById<TextInputLayout>(R.id.event_commentaire_mark).editText?.text.toString()
 
             val jsonInputBodyData = JSONObject()
-                .put("title", fragment.arguments?.getString("adresse"))
+                .put("title", fragment.titleEvent.text.toString())
                 .put("message", message)
                 .put("latitude", fragment.arguments?.getDouble("latitude"))
                 .put("longitude", fragment.arguments?.getDouble("longitude"))

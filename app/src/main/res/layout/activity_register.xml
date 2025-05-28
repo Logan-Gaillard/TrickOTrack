@@ -37,57 +37,17 @@
         app:layout_constraintTop_toBottomOf="@id/welcome_txt"
         app:layout_constraintWidth_percent="0.85">
 
-        <!-- Nom -->
-        <com.google.android.material.textfield.TextInputLayout
-            android:id="@+id/nomRegInput"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginEnd="5dp"
-            android:autofillHints="name"
-            app:endIconMode="clear_text"
-            app:helperText="Nom de famille"
-            app:layout_constraintEnd_toStartOf="@+id/prenomRegInput"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent">
-
-            <com.google.android.material.textfield.TextInputEditText
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:hint="@string/lastName"
-                android:inputType="textPersonName" />
-        </com.google.android.material.textfield.TextInputLayout>
-
-        <!-- Prénom -->
-        <com.google.android.material.textfield.TextInputLayout
-            android:id="@+id/prenomRegInput"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:autofillHints="name"
-            app:endIconMode="clear_text"
-            app:helperText="Votre prénom"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintWidth_percent="0.50"> <!-- 50% de la largeur -->
-
-            <com.google.android.material.textfield.TextInputEditText
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:hint="@string/firstName"
-                android:inputType="textPersonName" />
-        </com.google.android.material.textfield.TextInputLayout>
-
         <!-- Pseudo -->
         <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/nicknameRegInput"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="10dp"
             android:autofillHints="username"
             app:endIconMode="clear_text"
             app:helperText="Votre pseudo"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/prenomRegInput">
+            app:layout_constraintTop_toTopOf="parent">
 
             <com.google.android.material.textfield.TextInputEditText
                 android:layout_width="match_parent"

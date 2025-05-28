@@ -19,11 +19,9 @@ class RegisterRepository {
     private val tokenManager = TokenManager // Instanciation de la classe TokenManager
     private val viewUtils = ViewUtils // Instanciation de la classe ViewUtils
 
-    suspend fun registerUser(nom: String, prenom: String, pseudo: String, email: String, password: String, passwordConfirm: String, errString: TextView, context: RegisterActivity): Boolean {
+    suspend fun registerUser(pseudo: String, email: String, password: String, passwordConfirm: String, errString: TextView, context: RegisterActivity): Boolean {
         // Envoie d'une requête POST à l'API pour enregistrer l'utilisateur
         val jsonObject = JSONObject()
-        jsonObject.put("nom", nom)
-        jsonObject.put("prenom", prenom)
         jsonObject.put("nickname", pseudo)
         jsonObject.put("email", email)
         jsonObject.put("password", password)

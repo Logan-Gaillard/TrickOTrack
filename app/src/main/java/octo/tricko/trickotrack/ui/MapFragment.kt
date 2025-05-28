@@ -14,6 +14,7 @@ import org.osmdroid.views.overlay.mylocation.MyLocationNewOverlay
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import octo.tricko.trickotrack.model.PlaceModel
 import octo.tricko.trickotrack.repository.MapRepository
+import org.osmdroid.views.overlay.infowindow.InfoWindow
 
 class MapFragment : Fragment() {
 
@@ -25,6 +26,7 @@ class MapFragment : Fragment() {
 
     lateinit var centreBtn: FloatingActionButton // Déclaration de la variable centreBtn (= le bouton de centrage de la carte)
     lateinit var alertBtn: FloatingActionButton
+    var infoWindowOpened : InfoWindow? = null // Lorsqu'une infoWindow sera ouverte
 
     var placeModel: PlaceModel = PlaceModel(this)
 
