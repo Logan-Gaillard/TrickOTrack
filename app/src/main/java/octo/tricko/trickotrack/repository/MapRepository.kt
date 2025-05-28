@@ -7,6 +7,8 @@ import android.location.Geocoder
 import android.location.Location
 import android.location.LocationManager
 import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
 import android.util.Log
 import android.view.MotionEvent
 import android.view.View
@@ -16,30 +18,33 @@ import androidx.core.graphics.drawable.toBitmap
 import androidx.core.graphics.scale
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import octo.tricko.trickotrack.R
-import octo.tricko.trickotrack.model.PlaceModel
 import octo.tricko.trickotrack.ui.MarkAskBottomFragment
 import octo.tricko.trickotrack.ui.MapFragment
-import octo.tricko.trickotrack.ui.components.CustomInfoWindow
+import octo.tricko.trickotrack.ui.components.CIWTempMark
 import org.osmdroid.api.IGeoPoint
 import org.osmdroid.events.MapEventsReceiver
+import org.osmdroid.events.MapListener
+import org.osmdroid.events.ScrollEvent
+import org.osmdroid.events.ZoomEvent
 import org.osmdroid.util.GeoPoint
 import org.osmdroid.views.MapView
 import org.osmdroid.views.overlay.MapEventsOverlay
 import org.osmdroid.views.overlay.Marker
 import org.osmdroid.views.overlay.gestures.RotationGestureOverlay
+import org.osmdroid.views.overlay.infowindow.InfoWindow
 import org.osmdroid.views.overlay.mylocation.GpsMyLocationProvider
 import org.osmdroid.views.overlay.mylocation.MyLocationNewOverlay
 import java.util.Locale
-import java.util.Random
 
 class MapRepository(mapFragment: MapFragment) {
 
-    private val markers: MutableList<Marker> = mutableListOf() // Liste des marqueurs sur la carte
-    private var actualMarker: Marker? = null; // Marqueur temporaire
+    private var tempMarker: Marker? = null; // Marqueur temporaire
+
     private lateinit var mapViewFragment: MapView // Déclaration de la variable mapView (= la carte)
 
     private val fragment: MapFragment = mapFragment // Récupération de la référence au fragment
 
+    private var lastCenter: IGeoPoint = GeoPoint(0.0, 0.0) // Position de la dernière carte affichée
 
 
     fun initMap(view: View) {
@@ -113,21 +118,72 @@ class MapRepository(mapFragment: MapFragment) {
         initOnClickCentreBtn(fragment.centreBtn) // Initialisation du bouton de centrage
 
         fragment.parentFragmentManager.setFragmentResultListener("MaskAskBottom", fragment.viewLifecycleOwner) { _, bundle ->
-            val isClose : Boolean = bundle.getBoolean("is_close")
-            if (isClose){
+            val isClose: Boolean = bundle.getBoolean("is_close")
+            if (isClose) {
                 // Supprimer le pin
-                if (actualMarker != null){
-                    actualMarker!!.closeInfoWindow()
-                    mapViewFragment.overlays.remove(actualMarker)
-                    markers.remove(actualMarker)
-                    actualMarker = null
+                if (tempMarker != null) {
+                    tempMarker!!.closeInfoWindow()
+                    mapViewFragment.overlays.remove(tempMarker)
+                    tempMarker = null
                 }
 
-                Thread{
+                Thread {
                     fragment.placeModel.updatePlaces()
                 }.start()
             }
         }
+
+        var idLastIdInfoWindow = 0
+        fragment.parentFragmentManager.setFragmentResultListener("MaskInfoBottom", fragment.viewLifecycleOwner) { _, bundle ->
+            val open: Boolean = bundle.getBoolean("open")
+            val id: Int = bundle.getInt("id")
+            if (open) {
+                // Supprimer le pin temporaire s'il y a
+                if (tempMarker != null) {
+                    tempMarker!!.closeInfoWindow()
+                    mapViewFragment.overlays.remove(tempMarker)
+                    tempMarker = null
+                }
+                if(idLastIdInfoWindow != id) {
+                    // Fermer la fenêtre d'information précédente si elle est ouverte
+                    fragment.infoWindowOpened?.close()
+                    fragment.infoWindowOpened = null // Réinitialiser la référence à la fenêtre d'information
+                    Log.d("MapFragment", "Fermeture de la fenêtre d'information initEvents " + idLastIdInfoWindow + " != " + id)
+                }
+                idLastIdInfoWindow = id // Mettre à jour l'ID de la dernière fenêtre d'information ouverte
+            }
+        }
+
+        val handler = Handler(Looper.getMainLooper())
+        var scrollRunnable: Runnable? = null
+
+        fragment.mapView.addMapListener(object : MapListener {
+            override fun onScroll(event: ScrollEvent?): Boolean {
+                scrollRunnable?.let { handler.removeCallbacks(it) }
+
+                scrollRunnable = Runnable {
+                    val newCenter = fragment.mapView.mapCenter
+                    val latDiff = kotlin.math.abs(newCenter.latitude - lastCenter.latitude)
+                    val lonDiff = kotlin.math.abs(newCenter.longitude - lastCenter.longitude)
+
+                    if (latDiff >= 0.01 || lonDiff >= 0.01) {
+                        Thread {
+                            fragment.placeModel.updatePlaces()
+                        }.start()
+                    }
+
+                    lastCenter = newCenter
+                }
+
+                handler.postDelayed(scrollRunnable!!, 1000)
+                return true
+            }
+
+            override fun onZoom(event: ZoomEvent?): Boolean {
+                return false
+            }
+        })
+
     }
 
     @SuppressLint("ClickableViewAccessibility")
@@ -148,27 +204,25 @@ class MapRepository(mapFragment: MapFragment) {
     private fun initMapEventOverlay(){
         val tapOverlay = MapEventsOverlay(object: MapEventsReceiver {
             override fun singleTapConfirmedHelper(p: GeoPoint?): Boolean {
-                for( marker in markers){
-                    if (marker.isInfoWindowShown){
-                        marker.closeInfoWindow()
-                    }
-                }
-                if (actualMarker != null){
-                    actualMarker!!.closeInfoWindow()
-                    mapViewFragment.overlays.remove(actualMarker)
 
-                    markers.remove(actualMarker)
-                    actualMarker = null
+                if (tempMarker != null){
+                    tempMarker!!.closeInfoWindow()
+                    mapViewFragment.overlays.remove(tempMarker)
+
+                    tempMarker = null
+                }else if(fragment.infoWindowOpened != null){
+                    fragment.infoWindowOpened?.close()
+                    fragment.infoWindowOpened = null
+                    Log.d("MapFragment", "Fermeture de la fenêtre d'information initMapEventOverlay")
                 }else{
-                    actualMarker = Marker(mapViewFragment)
-                    actualMarker!!.position = p
-                    actualMarker!!.setAnchor(Marker.ANCHOR_CENTER, Marker.ANCHOR_BOTTOM)
-                    actualMarker!!.icon = ResourcesCompat.getDrawable(fragment.resources, R.drawable.touched_pin, null)
-                    actualMarker!!.infoWindow = CustomInfoWindow(mapViewFragment, fragment.requireActivity())
-                    actualMarker!!.showInfoWindow()
-                    mapViewFragment.overlays.add(actualMarker)
+                    tempMarker = Marker(mapViewFragment)
+                    tempMarker!!.position = p
+                    tempMarker!!.setAnchor(Marker.ANCHOR_CENTER, Marker.ANCHOR_BOTTOM)
+                    tempMarker!!.icon = ResourcesCompat.getDrawable(fragment.resources, R.drawable.touched_pin, null)
+                    tempMarker!!.infoWindow = CIWTempMark(mapViewFragment, fragment.requireActivity())
+                    tempMarker!!.showInfoWindow()
+                    mapViewFragment.overlays.add(tempMarker)
                     mapViewFragment.controller.animateTo(p)
-                    markers.add(actualMarker!!)
 
                     mapViewFragment.invalidate()
                 }

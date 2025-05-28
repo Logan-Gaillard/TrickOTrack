@@ -46,14 +46,12 @@ class RegisterActivity : AppCompatActivity() {
         registerBtn = findViewById(R.id.register_button) // Récupération de la référence au bouton d'enregistrement
 
         registerBtn.setOnClickListener {
-            val nom = findViewById<TextInputLayout>(R.id.nomRegInput).editText?.text.toString() // Récupération du texte saisi dans le champ nom
-            val prenom = findViewById<TextInputLayout>(R.id.prenomRegInput).editText?.text.toString() // Récupération du texte saisi dans le champ prénom
             val pseudo = nicknameRegInput.text.toString() // Récupération du texte saisi dans le champ pseudo
             val email = courrielRegInput.text.toString() // Récupération du texte saisi dans le champ email
             val errString = findViewById<TextView>(R.id.errorRegText) // Récupération de la référence au champ d'erreur
 
             lifecycleScope.launch {
-                repository.registerUser(nom, prenom, pseudo, email, passwordRegInput.text.toString(), passwordRegInput.text.toString(), errString, this@RegisterActivity) // Appel de la méthode registerUser de la classe RegisterRepository
+                repository.registerUser(pseudo, email, passwordRegInput.text.toString(), passwordRegInput.text.toString(), errString, this@RegisterActivity) // Appel de la méthode registerUser de la classe RegisterRepository
             }
         }
 
@@ -63,15 +61,16 @@ class RegisterActivity : AppCompatActivity() {
         }
 
 
-
         //Lorsque le pseudo est modifié, on vérifie si le pseudo est valide
         nicknameRegInput.doOnTextChanged { text,_,_,_ ->
             repository.requiredFieldsFilled(text.toString(), courrielRegInput.text.toString(), passwordRegInput.text.toString(), passwordConfirmRegInput.text.toString(), registerBtn) // Appel de la méthode isPasswordsValid de la classe RegisterRepository
         }
-        //Lorsque le nom est modifié, on vérifie si le nom est valide
+
+        //Lorsque l'email est modifié, on vérifie si le nom est valide
         courrielRegInput.doOnTextChanged { text,_,_,_ ->
             repository.requiredFieldsFilled(nicknameRegInput.text.toString(), text.toString(), passwordRegInput.text.toString(), passwordConfirmRegInput.text.toString(), registerBtn) // Appel de la méthode isPasswordsValid de la classe RegisterRepository
         }
+
         //Lorsque le mot de passe est modifié, on vérifie si le mot de passe est valide
         passwordRegInput.doOnTextChanged { text,_,_,_ ->
             repository.requiredFieldsFilled(nicknameRegInput.text.toString(), courrielRegInput.text.toString(), text.toString(), passwordConfirmRegInput.text.toString(), registerBtn) // Appel de la méthode isPasswordsValid de la classe RegisterRepository

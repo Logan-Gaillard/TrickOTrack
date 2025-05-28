@@ -1,13 +1,17 @@
 package octo.tricko.trickotrack.model
 
+import android.os.Bundle
 import android.os.Looper
 import android.util.Log
 import android.widget.Toast
+import androidx.core.content.res.ResourcesCompat
 import androidx.lifecycle.lifecycleScope
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
+import octo.tricko.trickotrack.R
 import octo.tricko.trickotrack.data.TokenManager
 import octo.tricko.trickotrack.ui.MapFragment
+import octo.tricko.trickotrack.ui.components.CIWMark
 import octo.tricko.trickotrack.utils.RequestAPI
 import org.json.JSONObject
 import org.osmdroid.util.GeoPoint
@@ -18,20 +22,21 @@ enum class PlaceType{ // Enum pour représenter le type du marquage
     EVENT, // Evenement
 }
 
-class Mark(markId: Int, markMessage: String, markIsCelebrated: Boolean, markIsDecorated: Boolean, markAuthorId: Int, markCreatedAt: String) {
+class Mark(markId: Int, markMessage: String, markIsCelebrated: Boolean, markIsDecorated: Boolean, markAuthorId: Int, markAuthorNickname: String, markCreatedAt: String) {
     val id : Int = markId
     val message: String = markMessage
     val isCelebrated: Boolean = markIsCelebrated
     val isDecorated: Boolean = markIsDecorated
     val authorId: Int = markAuthorId
+    val authorNickname: String = markAuthorNickname
     val createdAt: String = markCreatedAt
 
     override fun toString(): String {
-        return "Mark(id=$id, message='$message', isCelebrated=$isCelebrated, isDecorated=$isDecorated, authorId=$authorId, createdAt='$createdAt')"
+        return "Mark(id=$id, message='$message', isCelebrated=$isCelebrated, isDecorated=$isDecorated, authorId=$authorId, authorNickname=$authorNickname, createdAt='$createdAt')"
     }
 }
 
-class Place(placeId: Int, placeIsAlert: Boolean, placeLatitude: Double, placeLongitude: Double, placeDesignation: String, placeType: PlaceType, placeAdresse: String, placeAuthorId: Int) {
+class Place(placeId: Int, placeIsAlert: Boolean, placeLatitude: Double, placeLongitude: Double, placeDesignation: String, placeType: PlaceType, placeAdresse: String, placeAuthorId: Int, placeAuthorNickname: String) {
     val id : Int = placeId
     val isAlert : Boolean = placeIsAlert
     val latitude : Double = placeLatitude
@@ -40,10 +45,11 @@ class Place(placeId: Int, placeIsAlert: Boolean, placeLatitude: Double, placeLon
     val type : PlaceType = placeType
     val adresse : String = placeAdresse
     val authorId : Int = placeAuthorId
+    val authorNickname : String = placeAuthorNickname
     val marks : MutableList<Mark> = mutableListOf<Mark>()
 
     override fun toString(): String {
-        return "Place(id=$id, isAlert=$isAlert, latitude=$latitude, longitude=$longitude, designation='$designation', type=$type, adresse='$adresse', authorId=$authorId, marks=$marks)"
+        return "Place(id=$id, isAlert=$isAlert, latitude=$latitude, longitude=$longitude, designation='$designation', type=$type, adresse='$adresse', authorId=$authorId, authorNickname$authorNickname, marks=$marks)"
     }
 }
 
@@ -65,7 +71,37 @@ class PlaceModel(mapFragment: MapFragment) {
                     id = place.id.toString() // ID du marquage
                     position = GeoPoint(place.latitude, place.longitude) // Position du marquage
                     title = place.designation + "\n\n" + place.marks.first().message // Titre du marquage
+                    infoWindow = CIWMark(fragment.mapView, fragment.requireActivity(), place) // Fenêtre d'information du marquage
+
+                    icon = when (place.type) {
+                        PlaceType.HOUSE -> {
+                            if(place.marks.first().isCelebrated){
+                                val drawable = ResourcesCompat.getDrawable(fragment.resources, R.mipmap.mark_halloween, null)
+                                drawable
+                            }else{
+                                val drawable = ResourcesCompat.getDrawable(fragment.resources, R.mipmap.mark_non_halloween, null)
+                                drawable
+                            }
+                        }
+
+                        PlaceType.EVENT -> {
+                            val drawable = ResourcesCompat.getDrawable(fragment.resources, R.mipmap.mark_event, null)
+                            drawable
+                        }
+                    }
                     setAnchor(Marker.ANCHOR_CENTER, Marker.ANCHOR_BOTTOM) // Positionnement du marqueur
+
+                    setOnMarkerClickListener { marker, _ -> // Listener pour le clic sur le marquage
+                        marker.showInfoWindow() // Affichage de la fenêtre d'information
+                        val result = Bundle().apply {
+                            putBoolean("open", true)
+                            putInt("id", place.id) // Envoi de l'ID du marquage
+                        }
+                        fragment.parentFragmentManager.setFragmentResult("MaskInfoBottom", result)
+                        fragment.infoWindowOpened = marker.infoWindow // Enregistrement de la fenêtre d'information ouverte
+                        fragment.mapView.controller.animateTo(marker.position)
+                        true // Retourne true pour indiquer que l'événement a été consommé
+                    }
                 }
                 fragment.mapView.overlays.add(marker) // Ajout du marquage sur la carte
                 actualPlaces.add(place) // Ajout de la place à la liste des marquages actuels
@@ -123,13 +159,13 @@ class PlaceModel(mapFragment: MapFragment) {
                             gestPlaces(marksArray)// Appel de la fonction pour gérer les données
                         }else{
                             newPlaces.clear()
-                            actualPlaces.clear()
                         }
                         updateMarksOnMap() // Appel de la fonction pour mettre à jour les marquages sur la carte
                     }
 
                 } else { // Si la réponse est incorrecte
                     Log.d(fragment.context.toString(), "Erreur : ${response}") // Affichage de l'erreur dans les logs
+                    if(response["status"] == "alreadyInRequest") return@launch
                     Toast.makeText(fragment.context, "Erreur : ${response["message"]}", Toast.LENGTH_SHORT).show() // Affichage d'un message d'erreur
                 }
             }
@@ -155,8 +191,9 @@ class PlaceModel(mapFragment: MapFragment) {
                 val placeType = if (placeJSONObject.getInt("is_house") == 1) PlaceType.HOUSE else PlaceType.EVENT
                 val placeAdresse = placeJSONObject.getString("adresse")
                 val placeAuthorId = placeJSONObject.getInt("author_id")
+                val placeAuthorNickname = placeJSONObject.getString("author_nickname")
 
-                val place = Place(placeId, placeIsAlert, placeLatitude, placeLongitude, placeDesignation, placeType, placeAdresse, placeAuthorId)
+                val place = Place(placeId, placeIsAlert, placeLatitude, placeLongitude, placeDesignation, placeType, placeAdresse, placeAuthorId, placeAuthorNickname)
 
                 val marksResponse = placeJSONObject.getJSONArray("marks")
                 if(marksResponse.length() > 0){
@@ -168,8 +205,9 @@ class PlaceModel(mapFragment: MapFragment) {
                         val markIsDecorated = markJSONObject.getInt("is_decorated") == 1
                         val markAuthorId = markJSONObject.getInt("author_id")
                         val markCreatedAt = markJSONObject.getString("created_at")
+                        val markAuthorNickname = markJSONObject.getString("author_nickname")
 
-                        val mark = Mark(markId, markMessage, markIsCelebrated, markIsDecorated, markAuthorId, markCreatedAt)
+                        val mark = Mark(markId, markMessage, markIsCelebrated, markIsDecorated, markAuthorId, markAuthorNickname, markCreatedAt)
                         place.marks.add(mark)
                     }
                 }
