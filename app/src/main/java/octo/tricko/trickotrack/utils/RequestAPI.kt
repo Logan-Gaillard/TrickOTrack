@@ -20,7 +20,8 @@ object RequestAPI {
 
     suspend fun requestPOST(urlRequest: String, jsonInputBodyData: JSONObject, token: String? = null): Map<String, Any> = withContext(Dispatchers.IO) {
         try{
-            if(doingRequest) return@withContext mapOf("status" to "error", "message" to "Une requête est déjà en cours")
+            //Retourner sans context si une requête est déjà en cours
+            if(doingRequest) return@withContext mapOf("status" to "alreadyInRequest", "message" to "Une requête est déjà en cours", "type" to "RequestInProgress")
             doingRequest = true
 
             if (urlRequest.isEmpty()) throw Exception("URL vide") // Vérification de l'URL

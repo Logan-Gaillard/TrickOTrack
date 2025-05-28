@@ -3,9 +3,11 @@ package octo.tricko.trickotrack.model
 import android.os.Looper
 import android.util.Log
 import android.widget.Toast
+import androidx.core.content.res.ResourcesCompat
 import androidx.lifecycle.lifecycleScope
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
+import octo.tricko.trickotrack.R
 import octo.tricko.trickotrack.data.TokenManager
 import octo.tricko.trickotrack.ui.MapFragment
 import octo.tricko.trickotrack.utils.RequestAPI
@@ -65,6 +67,24 @@ class PlaceModel(mapFragment: MapFragment) {
                     id = place.id.toString() // ID du marquage
                     position = GeoPoint(place.latitude, place.longitude) // Position du marquage
                     title = place.designation + "\n\n" + place.marks.first().message // Titre du marquage
+
+                    icon = when (place.type) {
+                        PlaceType.HOUSE -> {
+                            if(place.marks.first().isCelebrated){
+                                val drawable = ResourcesCompat.getDrawable(fragment.resources, R.mipmap.mark_halloween, null)
+                                drawable
+                            }else{
+                                val drawable = ResourcesCompat.getDrawable(fragment.resources, R.mipmap.mark_non_halloween, null)
+                                drawable
+                            }
+                        }
+
+                        PlaceType.EVENT -> {
+                            val drawable = ResourcesCompat.getDrawable(fragment.resources, R.mipmap.mark_event, null)
+                            drawable
+                        }
+                    }
+
                     setAnchor(Marker.ANCHOR_CENTER, Marker.ANCHOR_BOTTOM) // Positionnement du marqueur
                 }
                 fragment.mapView.overlays.add(marker) // Ajout du marquage sur la carte
@@ -123,13 +143,13 @@ class PlaceModel(mapFragment: MapFragment) {
                             gestPlaces(marksArray)// Appel de la fonction pour gérer les données
                         }else{
                             newPlaces.clear()
-                            actualPlaces.clear()
                         }
                         updateMarksOnMap() // Appel de la fonction pour mettre à jour les marquages sur la carte
                     }
 
                 } else { // Si la réponse est incorrecte
                     Log.d(fragment.context.toString(), "Erreur : ${response}") // Affichage de l'erreur dans les logs
+                    if(response["status"] == "alreadyInRequest") return@launch
                     Toast.makeText(fragment.context, "Erreur : ${response["message"]}", Toast.LENGTH_SHORT).show() // Affichage d'un message d'erreur
                 }
             }
