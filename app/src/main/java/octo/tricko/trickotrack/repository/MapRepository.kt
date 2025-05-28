@@ -12,7 +12,7 @@ import android.os.Looper
 import android.util.Log
 import android.view.MotionEvent
 import android.view.View
-import androidx.core.content.PermissionChecker
+import android.widget.Toast
 import androidx.core.content.res.ResourcesCompat
 import androidx.core.graphics.drawable.toBitmap
 import androidx.core.graphics.scale
@@ -21,6 +21,7 @@ import octo.tricko.trickotrack.R
 import octo.tricko.trickotrack.ui.MarkAskBottomFragment
 import octo.tricko.trickotrack.ui.MapFragment
 import octo.tricko.trickotrack.ui.components.CIWTempMark
+import octo.tricko.trickotrack.utils.PhoneUtils
 import org.osmdroid.api.IGeoPoint
 import org.osmdroid.events.MapEventsReceiver
 import org.osmdroid.events.MapListener
@@ -31,7 +32,6 @@ import org.osmdroid.views.MapView
 import org.osmdroid.views.overlay.MapEventsOverlay
 import org.osmdroid.views.overlay.Marker
 import org.osmdroid.views.overlay.gestures.RotationGestureOverlay
-import org.osmdroid.views.overlay.infowindow.InfoWindow
 import org.osmdroid.views.overlay.mylocation.GpsMyLocationProvider
 import org.osmdroid.views.overlay.mylocation.MyLocationNewOverlay
 import java.util.Locale
@@ -82,24 +82,31 @@ class MapRepository(mapFragment: MapFragment) {
         mapViewFragment.overlays.add(fragment.mRotationGestureOverlay) // Ajout de l'overlay de rotation à la carte
 
         //vérification des permissions de localisation
-        if(PermissionChecker.checkSelfPermission(fragment.requireContext(), android.Manifest.permission.ACCESS_FINE_LOCATION) == PermissionChecker.PERMISSION_GRANTED) {
-            Log.d("Permission", "Permission accordée")
-            val locationManager = fragment.requireContext().getSystemService(Context.LOCATION_SERVICE) as LocationManager // Accès au service de localisation android
-            val location: Location? = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER) // Récupération de la dernière position connue sur le GPS
-            location?.let { // Si la position n'est pas nulle
-                val latitude = it.latitude
-                val longitude = it.longitude
-                val userLocation = GeoPoint(latitude, longitude)
-
-                // Centrer la carte sur la position
-                mapViewFragment.controller.setCenter(userLocation) // Définition de la position de la carte sur la position de l'utilisateur
+        if (PhoneUtils.isLocalisationPermissionsGranted(fragment.requireContext())) {
+            val locationManager = fragment.requireContext().getSystemService(Context.LOCATION_SERVICE) as LocationManager
+            if(!PhoneUtils.isLocationEnabled(fragment.requireContext())) {
+                Log.d("Permission", "Localisation désactivée")
+                Toast.makeText(fragment.requireContext(), "Veuillez activer la localisation et redémarrer l'application", Toast.LENGTH_SHORT).show()
+                mapViewFragment.controller.setCenter(GeoPoint(48.8566, 2.3522)) // Définition de la position de la carte sur Paris
+                return
             }
-
-        }else{
+            try {
+                val location: Location? = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER)
+                location?.let {
+                    val latitude = it.latitude
+                    val longitude = it.longitude
+                    val userLocation = GeoPoint(latitude, longitude)
+                    mapViewFragment.controller.setCenter(userLocation)
+                }
+            } catch (e: SecurityException) {
+                Log.e("Permission", "Erreur de permission : ${e.message}")
+                mapViewFragment.controller.setCenter(GeoPoint(48.8566, 2.3522))
+            }
+        } else {
             Log.d("Permission", "Permission non accordée")
-            // Permission non accordée, alors nous l'alertons
-            mapViewFragment.controller.setCenter(GeoPoint(48.8566, 2.3522)) // Définition de la position de la carte sur Paris
+            mapViewFragment.controller.setCenter(GeoPoint(48.8566, 2.3522))
         }
+
         fragment.mLocationOverlay.enableFollowLocation() // Activation du suivi de la position de l'utilisateur
 
         initEvents() // Initialisation des événements de la carte
@@ -148,7 +155,6 @@ class MapRepository(mapFragment: MapFragment) {
                     // Fermer la fenêtre d'information précédente si elle est ouverte
                     fragment.infoWindowOpened?.close()
                     fragment.infoWindowOpened = null // Réinitialiser la référence à la fenêtre d'information
-                    Log.d("MapFragment", "Fermeture de la fenêtre d'information initEvents " + idLastIdInfoWindow + " != " + id)
                 }
                 idLastIdInfoWindow = id // Mettre à jour l'ID de la dernière fenêtre d'information ouverte
             }
@@ -186,8 +192,8 @@ class MapRepository(mapFragment: MapFragment) {
 
     }
 
-    @SuppressLint("ClickableViewAccessibility")
     //Lorsqu'une interaction tactile est détectée sur la carte
+    @SuppressLint("ClickableViewAccessibility")
     private fun initOnTouchEvent(mapView: MapView, centreBtn: View, mLocationOverlay: MyLocationNewOverlay) {
         //Lors d'un movement tactile sur la map
         mapView.setOnTouchListener { v, event ->
@@ -239,6 +245,13 @@ class MapRepository(mapFragment: MapFragment) {
     private fun initOnClickAlertBtn(alertBtn: FloatingActionButton){
         alertBtn.setOnClickListener {
 
+            if(!PhoneUtils.isLocationEnabled(fragment.requireContext())) {
+                // Si la localisation n'est pas activée, on affiche un message
+                Log.d("MapRepository", "Localisation non activée")
+                Toast.makeText(fragment.requireContext(), "Veuillez activer la localisation et redémarrer l'application", Toast.LENGTH_SHORT).show()
+                return@setOnClickListener
+            }
+
             // Récupération de l'adresse à partir des coordonnées
             Thread {
                 try {
@@ -269,12 +282,17 @@ class MapRepository(mapFragment: MapFragment) {
 
     private fun initOnClickCentreBtn(centreBtn: FloatingActionButton){
         centreBtn.setOnClickListener {
-            centreBtn.setOnClickListener {
-                val geoPoint : IGeoPoint = fragment.mLocationOverlay.myLocation
-                mapViewFragment.controller.animateTo(geoPoint, 18.5, 1000)
-                fragment.mLocationOverlay.enableFollowLocation() // Activation du suivi de la position de l'utilisateur
-                centreBtn.visibility = View.GONE // Masquer le bouton de centrage
+            if(!PhoneUtils.isLocationEnabled(fragment.requireContext())) {
+                // Si la localisation n'est pas activée, on affiche un message
+                Log.d("MapRepository", "Localisation non activée")
+                Toast.makeText(fragment.requireContext(), "Veuillez activer la localisation et redémarrer l'application", Toast.LENGTH_SHORT).show()
+                return@setOnClickListener
             }
+
+            val geoPoint : IGeoPoint = fragment.mLocationOverlay.myLocation
+            mapViewFragment.controller.animateTo(geoPoint, 18.5, 1000)
+            fragment.mLocationOverlay.enableFollowLocation() // Activation du suivi de la position de l'utilisateur
+            centreBtn.visibility = View.GONE // Masquer le bouton de centrage
         }
     }
 

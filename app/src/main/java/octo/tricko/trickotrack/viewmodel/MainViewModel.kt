@@ -12,6 +12,7 @@ import androidx.lifecycle.ViewModel
 import octo.tricko.trickotrack.R
 import octo.tricko.trickotrack.ui.MapFragment
 import octo.tricko.trickotrack.ui.SettingsFragment
+import octo.tricko.trickotrack.utils.PhoneUtils
 
 class MainViewModel : ViewModel() {
 
@@ -23,7 +24,7 @@ class MainViewModel : ViewModel() {
         val permission = android.Manifest.permission.ACCESS_FINE_LOCATION
         if (ContextCompat.checkSelfPermission(activity, permission) != PackageManager.PERMISSION_GRANTED) {
             // La permission n'est pas accordée, on la demande
-            ActivityCompat.requestPermissions(activity, arrayOf(permission), 1)
+            PhoneUtils.requestLocationPermission(activity) // Demande de permission de localisation
         }
     }
 
