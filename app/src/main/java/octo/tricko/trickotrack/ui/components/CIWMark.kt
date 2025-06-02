@@ -1,12 +1,15 @@
 package octo.tricko.trickotrack.ui.components
 
 import android.graphics.Typeface
+import android.os.Bundle
+import android.widget.Button
 import android.widget.LinearLayout
 import android.widget.TextView
 import androidx.fragment.app.FragmentActivity
 import octo.tricko.trickotrack.R
 import octo.tricko.trickotrack.model.Place
 import octo.tricko.trickotrack.model.PlaceType
+import octo.tricko.trickotrack.ui.MarkAskBottomFragment
 import org.osmdroid.views.MapView
 import org.osmdroid.views.overlay.Marker
 import org.osmdroid.views.overlay.infowindow.InfoWindow
@@ -20,9 +23,12 @@ class CIWMark(mapView: MapView, activityFragment: FragmentActivity, place: Place
     override fun onOpen(item: Any?) {
         if (item is Marker) {
 
+            val markBtn : Button = mView.findViewById<Button>(R.id.ciw_mark_report_btn)
+
             if(place.type == PlaceType.EVENT){
                 mView.findViewById<TextView>(R.id.ciw_designation).text = place.designation
                 mView.findViewById<TextView>(R.id.ciw_mark_adresse_value).text = place.adresse
+
             }else{
                 mView.findViewById<TextView>(R.id.ciw_designation).text = place.adresse
                 mView.findViewById<TextView>(R.id.ciw_mark_adresse_text).visibility = TextView.GONE
@@ -73,6 +79,7 @@ class CIWMark(mapView: MapView, activityFragment: FragmentActivity, place: Place
                         }
                     }
                     setTextColor(if (viewMark.celebrated) activity.getColor(R.color.green) else activity.getColor(R.color.red))
+                    visibility = if (place.type == PlaceType.EVENT) TextView.GONE else TextView.VISIBLE
                     textSize = 14f
                     setPadding(8, 0, 8, 16)
                 }
@@ -80,6 +87,19 @@ class CIWMark(mapView: MapView, activityFragment: FragmentActivity, place: Place
                 scrollLinear.addView(textMessageView)
                 scrollLinear.addView(statusFete)
             }
+
+            markBtn.setOnClickListener {
+                val markAskBottomFragment = MarkAskBottomFragment()
+                markAskBottomFragment.arguments = Bundle().apply {
+                    putDouble("latitude", item.position.latitude)
+                    putDouble("longitude", item.position.longitude)
+                    putString("adresse", place.adresse)
+                }
+                markAskBottomFragment.show(activity.supportFragmentManager, "AlertBottomFragment")
+            }
+
+            markBtn.isEnabled = true;
+
         }
     }
 

@@ -42,6 +42,7 @@ android {
 
 dependencies {
 
+    implementation(libs.androidx.core.i18n)
     val activity_version = "1.7.2"
 
     implementation(libs.androidx.core.ktx)
