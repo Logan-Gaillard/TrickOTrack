@@ -10,7 +10,6 @@ import androidx.core.view.GravityCompat
 import androidx.drawerlayout.widget.DrawerLayout
 import com.google.android.material.navigation.NavigationView
 import octo.tricko.trickotrack.R
-import octo.tricko.trickotrack.data.TokenManager
 import octo.tricko.trickotrack.utils.ViewUtils
 
 import octo.tricko.trickotrack.viewmodel.MainViewModel
@@ -19,7 +18,6 @@ class MainActivity : AppCompatActivity() {
 
     private val viewModel = MainViewModel()
     private val viewUtils = ViewUtils
-    private val tokenManager = TokenManager // Instanciation de la classe TokenManager
 
     private lateinit var drawerLayout: DrawerLayout //Déclaration de la variable drawerLayout (= la barre de navigation)
     private lateinit var navView: NavigationView //Déclaration de la variable navView (= la vue de navigation)
@@ -68,5 +66,6 @@ class MainActivity : AppCompatActivity() {
             drawerLayout.closeDrawer(GravityCompat.START) // Ferme la barre de navigation
             true // Indique que l'événement a été traité
         }
+
     }
 }

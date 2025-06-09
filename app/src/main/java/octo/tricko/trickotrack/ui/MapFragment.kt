@@ -13,8 +13,9 @@ import org.osmdroid.views.overlay.gestures.RotationGestureOverlay
 import org.osmdroid.views.overlay.mylocation.MyLocationNewOverlay
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import octo.tricko.trickotrack.model.PlaceModel
+import octo.tricko.trickotrack.model.SweeterModel
+import octo.tricko.trickotrack.repository.InfoWindowOpened
 import octo.tricko.trickotrack.repository.MapRepository
-import org.osmdroid.views.overlay.infowindow.InfoWindow
 
 class MapFragment : Fragment() {
 
@@ -22,13 +23,15 @@ class MapFragment : Fragment() {
     lateinit var mLocationOverlay: MyLocationNewOverlay // Déclaration de la variable mLocatationOverlay (= la localisation de l'utilisateur)
     lateinit var mRotationGestureOverlay: RotationGestureOverlay // Déclaration de la variable mRotationGestureOverlay (= la rotation de la carte)
 
-    private var mapRepository: MapRepository = MapRepository(this) // Instanciation de la classe MapRepository
-
     lateinit var centreBtn: FloatingActionButton // Déclaration de la variable centreBtn (= le bouton de centrage de la carte)
     lateinit var alertBtn: FloatingActionButton
-    var infoWindowOpened : InfoWindow? = null // Lorsqu'une infoWindow sera ouverte
+    val infoWindowOpened: InfoWindowOpened = InfoWindowOpened() // Instanciation de la classe InfoWindowOpened
+
+    private var mapRepository: MapRepository = MapRepository(this) // Instanciation de la classe MapRepository
+
 
     var placeModel: PlaceModel = PlaceModel(this)
+    val sweeterModel: SweeterModel = SweeterModel(this) // Instanciation de la classe CornerModel
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         super.onCreateView(inflater, container, savedInstanceState)

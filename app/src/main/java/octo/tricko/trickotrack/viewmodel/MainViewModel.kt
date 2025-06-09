@@ -3,11 +3,8 @@ package octo.tricko.trickotrack.viewmodel
 import android.app.Activity
 import android.content.pm.PackageManager
 import android.view.MenuItem
-import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.FragmentManager
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import octo.tricko.trickotrack.R
 import octo.tricko.trickotrack.ui.MapFragment
@@ -15,10 +12,6 @@ import octo.tricko.trickotrack.ui.SettingsFragment
 import octo.tricko.trickotrack.utils.PhoneUtils
 
 class MainViewModel : ViewModel() {
-
-
-    private val _message = MutableLiveData<String>()
-    val message: LiveData<String> = _message
 
     fun requestPosition(activity: Activity) {
         val permission = android.Manifest.permission.ACCESS_FINE_LOCATION
