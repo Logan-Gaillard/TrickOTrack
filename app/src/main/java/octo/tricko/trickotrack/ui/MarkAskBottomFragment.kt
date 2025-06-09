@@ -10,7 +10,7 @@ import com.google.android.material.button.MaterialButton
 import com.google.android.material.tabs.TabLayout
 import com.google.android.material.textfield.TextInputLayout
 import octo.tricko.trickotrack.R
-import octo.tricko.trickotrack.repository.MaskAskBottomRepository
+import octo.tricko.trickotrack.repository.MarkAskBottomRepository
 
 class MarkAskBottomFragment : BottomSheetDialogFragment() {
 
@@ -23,7 +23,7 @@ class MarkAskBottomFragment : BottomSheetDialogFragment() {
 
     lateinit var tabLayout: TabLayout
 
-    private val markAskBottomRepository = MaskAskBottomRepository(this)
+    private val markAskBottomRepository = MarkAskBottomRepository(this)
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         super.onCreateView(inflater, container, savedInstanceState)

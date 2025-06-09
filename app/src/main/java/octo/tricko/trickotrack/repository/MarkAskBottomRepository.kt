@@ -17,7 +17,7 @@ import octo.tricko.trickotrack.ui.MarkAskBottomFragment
 import octo.tricko.trickotrack.utils.RequestAPI
 import org.json.JSONObject
 
-class MaskAskBottomRepository(markAskBottomFragment : MarkAskBottomFragment) {
+class MarkAskBottomRepository(markAskBottomFragment : MarkAskBottomFragment) {
     private val fragment: MarkAskBottomFragment = markAskBottomFragment
     private val requestAPI = RequestAPI
     private val tokenManager = TokenManager
@@ -77,7 +77,7 @@ class MaskAskBottomRepository(markAskBottomFragment : MarkAskBottomFragment) {
                 val result = Bundle().apply {
                     putBoolean("is_close", true)
                 }
-                fragment.parentFragmentManager.setFragmentResult("MaskAskBottom", result)
+                fragment.parentFragmentManager.setFragmentResult("MarkAskBottom", result)
                 fragment.dismiss() // Dismiss the fragment after showing the toast
             }
         }
@@ -111,7 +111,7 @@ class MaskAskBottomRepository(markAskBottomFragment : MarkAskBottomFragment) {
                     val result = Bundle().apply {
                         putBoolean("is_close", true)
                     }
-                    fragment.parentFragmentManager.setFragmentResult("MaskAskBottom", result)
+                    fragment.parentFragmentManager.setFragmentResult("MarkAskBottom", result)
                     fragment.dismiss()
                 } catch (e: Exception) {
                     Log.e("CoroutineError", "Erreur : ${e.message}", e)

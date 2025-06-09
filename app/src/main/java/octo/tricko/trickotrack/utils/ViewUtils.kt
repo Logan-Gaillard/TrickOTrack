@@ -9,6 +9,7 @@ import androidx.core.view.ViewCompat
 import androidx.core.view.WindowCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.updatePadding
+import octo.tricko.trickotrack.model.Sweeter
 
 object ViewUtils {
     fun adapterView(window: Window, view: View){
@@ -31,6 +32,7 @@ object ViewUtils {
                 is Double -> intent.putExtra(key, value)
                 is Float -> intent.putExtra(key, value)
                 is Long -> intent.putExtra(key, value)
+                is Sweeter -> intent.putExtra(key, value)
                 // Ajoutez d'autres types si nécessaire
             }
         }

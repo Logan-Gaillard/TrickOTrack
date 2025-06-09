@@ -32,19 +32,52 @@ import org.osmdroid.views.MapView
 import org.osmdroid.views.overlay.MapEventsOverlay
 import org.osmdroid.views.overlay.Marker
 import org.osmdroid.views.overlay.gestures.RotationGestureOverlay
+import org.osmdroid.views.overlay.infowindow.InfoWindow
 import org.osmdroid.views.overlay.mylocation.GpsMyLocationProvider
 import org.osmdroid.views.overlay.mylocation.MyLocationNewOverlay
 import java.util.Locale
 
-class MapRepository(mapFragment: MapFragment) {
+enum class InfoWindowType {
+    NONE, TEMP_MARK, PLACE, SWEETER
+}
 
-    private var tempMarker: Marker? = null; // Marqueur temporaire
+class InfoWindowOpened(iwTempMark: InfoWindowType = InfoWindowType.NONE, iwId: Int = -1) {
+    var type: InfoWindowType = iwTempMark
+    var id: Int = iwId // ID de la fenêtre d'information
+    var infoWindow: InfoWindow? = null // Fenêtre d'information ouverte, initialisée à null
+    var marker: Marker? = null // Marqueur associé à la fenêtre d'information, initialisé à null
+
+    fun close() {
+        if(infoWindow == null) return // Si la fenêtre d'information ou le marqueur sont nuls, on ne fait rien
+        infoWindow?.close()
+        type = InfoWindowType.NONE // Réinitialisation du type de fenêtre d'information
+        id = 0 // Réinitialisation de l'ID de la fenêtre d'information
+    }
+
+    fun set(iwTempMark: InfoWindowType = InfoWindowType.NONE, iwId: Int = -1, iwInfoWindow: InfoWindow? = null, iwMarker: Marker? = null) {
+        type = iwTempMark
+        id = iwId
+        infoWindow = iwInfoWindow // Mise à jour de la fenêtre d'information
+        marker = iwMarker // Mise à jour du marqueur associé
+    }
+
+    fun reset(){
+        type = InfoWindowType.NONE // Réinitialisation du type de fenêtre d'information
+        id = 0 // Réinitialisation de l'ID de la fenêtre d'information
+        infoWindow = null // Réinitialisation de la fenêtre d'information
+        marker = null // Réinitialisation du marqueur associé
+    }
+}
+
+class MapRepository(mapFragment: MapFragment) {
 
     private lateinit var mapViewFragment: MapView // Déclaration de la variable mapView (= la carte)
 
     private val fragment: MapFragment = mapFragment // Récupération de la référence au fragment
 
     private var lastCenter: IGeoPoint = GeoPoint(0.0, 0.0) // Position de la dernière carte affichée
+
+    var infoWindowOpened: InfoWindowOpened = fragment.infoWindowOpened // Fenêtre d'information ouverte
 
 
     fun initMap(view: View) {
@@ -111,6 +144,7 @@ class MapRepository(mapFragment: MapFragment) {
 
         initEvents() // Initialisation des événements de la carte
         fragment.placeModel.initAutoMarkUpdater() // Initialisation de l'auto-mise à jour des marquages
+        fragment.sweeterModel.initAutoSweeters() // Initialisation de l'auto-mise à jour des coins (utilisateurs de l'app)
     }
 
 // ---------------------- //
@@ -124,14 +158,15 @@ class MapRepository(mapFragment: MapFragment) {
         initOnClickAlertBtn(fragment.alertBtn) // Initialisation du bouton d'alerte
         initOnClickCentreBtn(fragment.centreBtn) // Initialisation du bouton de centrage
 
-        fragment.parentFragmentManager.setFragmentResultListener("MaskAskBottom", fragment.viewLifecycleOwner) { _, bundle ->
+        fragment.parentFragmentManager.setFragmentResultListener("MarkAskBottom", fragment.viewLifecycleOwner) { _, bundle ->
             val isClose: Boolean = bundle.getBoolean("is_close")
             if (isClose) {
                 // Supprimer le pin
-                if (tempMarker != null) {
-                    tempMarker!!.closeInfoWindow()
-                    mapViewFragment.overlays.remove(tempMarker)
-                    tempMarker = null
+                if (infoWindowOpened.type != InfoWindowType.NONE) {
+                    if(infoWindowOpened.type == InfoWindowType.TEMP_MARK && infoWindowOpened.marker != null) {
+                        mapViewFragment.overlays.remove(infoWindowOpened.marker)
+                    }
+                    infoWindowOpened.close() // Fermer la fenêtre d'information ouverte
                 }
 
                 Thread {
@@ -140,23 +175,39 @@ class MapRepository(mapFragment: MapFragment) {
             }
         }
 
-        var idLastIdInfoWindow = 0
-        fragment.parentFragmentManager.setFragmentResultListener("MaskInfoBottom", fragment.viewLifecycleOwner) { _, bundle ->
+        fragment.parentFragmentManager.setFragmentResultListener("MarkInfoBottom", fragment.viewLifecycleOwner) { _, bundle ->
             val open: Boolean = bundle.getBoolean("open")
             val id: Int = bundle.getInt("id")
             if (open) {
                 // Supprimer le pin temporaire s'il y a
-                if (tempMarker != null) {
-                    tempMarker!!.closeInfoWindow()
-                    mapViewFragment.overlays.remove(tempMarker)
-                    tempMarker = null
+                if (infoWindowOpened.type != InfoWindowType.PLACE) {
+                    if(infoWindowOpened.marker != null && infoWindowOpened.type == InfoWindowType.TEMP_MARK) {
+                        mapViewFragment.overlays.remove(infoWindowOpened.marker)
+                    }
+                    infoWindowOpened.close()
                 }
-                if(idLastIdInfoWindow != id) {
+                if(infoWindowOpened.id != id) {
                     // Fermer la fenêtre d'information précédente si elle est ouverte
-                    fragment.infoWindowOpened?.close()
-                    fragment.infoWindowOpened = null // Réinitialiser la référence à la fenêtre d'information
+                    infoWindowOpened.close()
                 }
-                idLastIdInfoWindow = id // Mettre à jour l'ID de la dernière fenêtre d'information ouverte
+            }
+        }
+
+        fragment.parentFragmentManager.setFragmentResultListener("SweeterInfo", fragment.viewLifecycleOwner) { _, bundle ->
+            val open: Boolean = bundle.getBoolean("open")
+            val id: Int = bundle.getInt("id")
+            if (open) {
+                // Supprimer le pin temporaire s'il y a
+                if (infoWindowOpened.type != InfoWindowType.SWEETER) {
+                    if(infoWindowOpened.marker != null && infoWindowOpened.type == InfoWindowType.TEMP_MARK) {
+                        mapViewFragment.overlays.remove(infoWindowOpened.marker)
+                    }
+                    infoWindowOpened.close()
+                }
+                if(infoWindowOpened.id != id) {
+                    // Fermer la fenêtre d'information précédente si elle est ouverte
+                    infoWindowOpened.close()
+                }
             }
         }
 
@@ -210,25 +261,26 @@ class MapRepository(mapFragment: MapFragment) {
     private fun initMapEventOverlay(){
         val tapOverlay = MapEventsOverlay(object: MapEventsReceiver {
             override fun singleTapConfirmedHelper(p: GeoPoint?): Boolean {
+                if (infoWindowOpened.type != InfoWindowType.NONE) {
+                    if(infoWindowOpened.marker != null && infoWindowOpened.type == InfoWindowType.TEMP_MARK) {
+                        mapViewFragment.overlays.remove(infoWindowOpened.marker)
+                    }
+                    infoWindowOpened.close()
+                    infoWindowOpened.reset()
 
-                if (tempMarker != null){
-                    tempMarker!!.closeInfoWindow()
-                    mapViewFragment.overlays.remove(tempMarker)
-
-                    tempMarker = null
-                }else if(fragment.infoWindowOpened != null){
-                    fragment.infoWindowOpened?.close()
-                    fragment.infoWindowOpened = null
                     Log.d("MapFragment", "Fermeture de la fenêtre d'information initMapEventOverlay")
                 }else{
-                    tempMarker = Marker(mapViewFragment)
-                    tempMarker!!.position = p
-                    tempMarker!!.setAnchor(Marker.ANCHOR_CENTER, Marker.ANCHOR_BOTTOM)
-                    tempMarker!!.icon = ResourcesCompat.getDrawable(fragment.resources, R.drawable.touched_pin, null)
-                    tempMarker!!.infoWindow = CIWTempMark(mapViewFragment, fragment.requireActivity())
-                    tempMarker!!.showInfoWindow()
-                    mapViewFragment.overlays.add(tempMarker)
+                    val marker: Marker = Marker(mapViewFragment)
+
+                    marker.position = p
+                    marker.setAnchor(Marker.ANCHOR_CENTER, Marker.ANCHOR_BOTTOM)
+                    marker.icon = ResourcesCompat.getDrawable(fragment.resources, R.drawable.touched_pin, null)
+                    marker.infoWindow = CIWTempMark(mapViewFragment, fragment.requireActivity())
+                    marker.showInfoWindow()
+                    mapViewFragment.overlays.add(marker)
                     mapViewFragment.controller.animateTo(p)
+
+                    infoWindowOpened.set(InfoWindowType.TEMP_MARK, -1, marker.infoWindow, marker) // Mise à jour de la fenêtre d'information ouverte
 
                     mapViewFragment.invalidate()
                 }

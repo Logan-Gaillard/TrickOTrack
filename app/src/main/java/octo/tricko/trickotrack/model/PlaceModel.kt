@@ -11,6 +11,7 @@ import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import octo.tricko.trickotrack.R
 import octo.tricko.trickotrack.data.TokenManager
+import octo.tricko.trickotrack.repository.InfoWindowType
 import octo.tricko.trickotrack.ui.MapFragment
 import octo.tricko.trickotrack.ui.components.CIWMark
 import octo.tricko.trickotrack.utils.RequestAPI
@@ -114,8 +115,8 @@ class PlaceModel(mapFragment: MapFragment) {
                     putBoolean("open", true)
                     putInt("id", place.id) // Envoi de l'ID du marquage
                 }
-                fragment.parentFragmentManager.setFragmentResult("MaskInfoBottom", result)
-                fragment.infoWindowOpened = marker.infoWindow // Enregistrement de la fenêtre d'information ouverte
+                fragment.parentFragmentManager.setFragmentResult("MarkInfoBottom", result)
+                fragment.infoWindowOpened.set(InfoWindowType.PLACE, marker.id.toInt(), marker.infoWindow, marker) // Enregistrement de la fenêtre d'information ouverte
                 fragment.mapView.controller.animateTo(marker.position)
                 true // Retourne true pour indiquer que l'événement a été consommé
             }
@@ -139,7 +140,7 @@ class PlaceModel(mapFragment: MapFragment) {
 
             if(isOpened) {
                 existingMarker.showInfoWindow() // Réaffiche la fenêtre d'information si elle était ouverte
-                fragment.infoWindowOpened = existingMarker.infoWindow // Enregistrement de la fenêtre d'information ouverte
+                fragment.infoWindowOpened.set(InfoWindowType.PLACE, existingMarker.id.toInt(), existingMarker.infoWindow, existingMarker) // Met à jour la fenêtre d'information ouverte
             }
         }
     }
